@@ -17,6 +17,7 @@ export class FooUpdateComponent implements OnInit {
 
   editForm = this.fb.group({
     id: [],
+    bar: [],
   });
 
   constructor(protected fooService: FooService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
@@ -30,6 +31,7 @@ export class FooUpdateComponent implements OnInit {
   updateForm(foo: IFoo): void {
     this.editForm.patchValue({
       id: foo.id,
+      bar: foo.bar,
     });
   }
 
@@ -51,6 +53,7 @@ export class FooUpdateComponent implements OnInit {
     return {
       ...new Foo(),
       id: this.editForm.get(['id'])!.value,
+      bar: this.editForm.get(['bar'])!.value,
     };
   }
 

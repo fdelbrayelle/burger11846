@@ -21,6 +21,9 @@ public class Foo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "bar")
+    private String bar;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
@@ -28,6 +31,19 @@ public class Foo implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getBar() {
+        return bar;
+    }
+
+    public Foo bar(String bar) {
+        this.bar = bar;
+        return this;
+    }
+
+    public void setBar(String bar) {
+        this.bar = bar;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
@@ -52,6 +68,7 @@ public class Foo implements Serializable {
     public String toString() {
         return "Foo{" +
             "id=" + getId() +
+            ", bar='" + getBar() + "'" +
             "}";
     }
 }

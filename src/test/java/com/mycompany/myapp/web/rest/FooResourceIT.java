@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 public class FooResourceIT {
 
+    private static final String DEFAULT_BAR = "AAAAAAAAAA";
+    private static final String UPDATED_BAR = "BBBBBBBBBB";
+
     @Autowired
     private FooRepository fooRepository;
 
@@ -47,7 +50,8 @@ public class FooResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Foo createEntity(EntityManager em) {
-        Foo foo = new Foo();
+        Foo foo = new Foo()
+            .bar(DEFAULT_BAR);
         return foo;
     }
     /**
@@ -57,7 +61,8 @@ public class FooResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Foo createUpdatedEntity(EntityManager em) {
-        Foo foo = new Foo();
+        Foo foo = new Foo()
+            .bar(UPDATED_BAR);
         return foo;
     }
 
@@ -80,6 +85,7 @@ public class FooResourceIT {
         List<Foo> fooList = fooRepository.findAll();
         assertThat(fooList).hasSize(databaseSizeBeforeCreate + 1);
         Foo testFoo = fooList.get(fooList.size() - 1);
+        assertThat(testFoo.getBar()).isEqualTo(DEFAULT_BAR);
     }
 
     @Test
@@ -112,7 +118,8 @@ public class FooResourceIT {
         restFooMockMvc.perform(get("/api/foos?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(foo.getId().intValue())));
+            .andExpect(jsonPath("$.[*].id").value(hasItem(foo.getId().intValue())))
+            .andExpect(jsonPath("$.[*].bar").value(hasItem(DEFAULT_BAR)));
     }
     
     @Test
@@ -125,7 +132,8 @@ public class FooResourceIT {
         restFooMockMvc.perform(get("/api/foos/{id}", foo.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(jsonPath("$.id").value(foo.getId().intValue()));
+            .andExpect(jsonPath("$.id").value(foo.getId().intValue()))
+            .andExpect(jsonPath("$.bar").value(DEFAULT_BAR));
     }
     @Test
     @Transactional
@@ -147,6 +155,8 @@ public class FooResourceIT {
         Foo updatedFoo = fooRepository.findById(foo.getId()).get();
         // Disconnect from session so that the updates on updatedFoo are not directly saved in db
         em.detach(updatedFoo);
+        updatedFoo
+            .bar(UPDATED_BAR);
 
         restFooMockMvc.perform(put("/api/foos")
             .contentType(MediaType.APPLICATION_JSON)
@@ -157,6 +167,7 @@ public class FooResourceIT {
         List<Foo> fooList = fooRepository.findAll();
         assertThat(fooList).hasSize(databaseSizeBeforeUpdate);
         Foo testFoo = fooList.get(fooList.size() - 1);
+        assertThat(testFoo.getBar()).isEqualTo(UPDATED_BAR);
     }
 
     @Test

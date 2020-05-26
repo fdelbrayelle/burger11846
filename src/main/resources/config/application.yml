@@ -158,16 +158,29 @@ jhipster:
     contact-email:
     license:
     license-url:
+
 kafka:
-  bootstrap-servers: localhost:9092
+  bootstrap.servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  polling.timeout: 10000
+  # There is a template topic naming convention below which can be changed.
+  # %3Cmessage_type%3E.%3Capplication_name%3E.%3Centity_name%3E with (all in snake_case):
+  # - %3Cmessage_type%3E: queuing, logging, tracking, etl/db, streaming, push, user...
+  # - %3Capplication_name%3E: the application base name
+  # - %3Centity_name%3E: the entity name which is consumed
   consumer:
-    key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    group.id: burger-11846
-    auto.offset.reset: earliest
+    foo:
+      name: queuing.burger_11846.foo
+      enabled: true
+      '[key.deserializer]': org.apache.kafka.common.serialization.StringDeserializer
+      '[value.deserializer]': com.mycompany.myapp.service.kafka.deserializer.FooDeserializer
+      '[group.id]': burger-11846
+      '[auto.offset.reset]': earliest
   producer:
-    key.serializer: org.apache.kafka.common.serialization.StringSerializer
-    value.serializer: org.apache.kafka.common.serialization.StringSerializer
+    foo:
+      name: queuing.burger_11846.foo
+      enabled: true
+      '[key.serializer]': org.apache.kafka.common.serialization.StringSerializer
+      '[value.serializer]': com.mycompany.myapp.service.kafka.serializer.FooSerializer
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class
